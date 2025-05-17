@@ -24,57 +24,24 @@ public class InputHandler : MonoBehaviour
 
     private void OnTapPerformed(InputAction.CallbackContext context)
     {
-        Vector2 screenPosition = GetInputScreenPosition();
+        Vector2 screenPos = GetInputScreenPosition();
+        Ray ray = Camera.main.ScreenPointToRay(screenPos);
 
-        // Ekrandan bir ray çýkar
-        Ray ray = Camera.main.ScreenPointToRay(screenPosition);
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit))
+        if (Physics.Raycast(ray, out RaycastHit hit))
         {
-            GameObject hitObject = hit.collider.gameObject;
-
-            // Eski objeyi temizle
-            if (selectedObject != null && selectedObject != hitObject)
-            {
-                ResetColor(selectedObject);
-            }
-
-            // Yeni objeyi seç ve kýrmýzý yap
-            selectedObject = hitObject;
-            SetRed(selectedObject);
+            GameManager.Instance.HandleClick(hit);
         }
     }
 
     private Vector2 GetInputScreenPosition()
     {
         if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.isPressed)
-        {
             return Touchscreen.current.primaryTouch.position.ReadValue();
-        }
         else if (Mouse.current != null && Mouse.current.leftButton.isPressed)
-        {
             return Mouse.current.position.ReadValue();
-        }
 
         return Vector2.zero;
     }
 
-    private void SetRed(GameObject obj)
-    {
-        Renderer renderer = obj.GetComponent<Renderer>();
-        if (renderer != null)
-        {
-            renderer.material.color = Color.red;
-        }
-    }
 
-    private void ResetColor(GameObject obj)
-    {
-        Renderer renderer = obj.GetComponent<Renderer>();
-        if (renderer != null)
-        {
-            renderer.material.color = Color.white;
-        }
-    }
 }
