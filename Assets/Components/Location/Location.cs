@@ -18,7 +18,7 @@ public class Location : MonoBehaviour
 
     private void Awake()
     {
-        soldierCount = 20;
+        //soldierCount = 20;
     }
 
     public void AddHorde(Horde horde)
@@ -56,6 +56,15 @@ public class Location : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Horde"))
         {
+            if (transform.parent != null && transform.parent.CompareTag("Airport"))
+            {
+                if (other.GetComponent<Horde>().Count > 30)
+                {
+                    GameManager.Instance.GameOver();
+                    Debug.Log("GameOver");
+                }
+            }
+
             soldierCount += other.GetComponent<Horde>().Count;
             Destroy(other.gameObject);
             OnSoldierChanged?.Invoke();

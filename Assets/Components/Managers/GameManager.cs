@@ -8,6 +8,10 @@ public class GameManager : MonoBehaviour
 
     private NavMeshAgent agent;
 
+    bool gameOver = false;
+
+
+
     private Location selectedLocation;
 
     [SerializeField] private GameObject hordePrefab;
@@ -17,6 +21,14 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private Canvas worldSpaceCanvas;
 
+    [SerializeField] GameObject Plane;
+
+    private Animator animator;
+
+    void Start()
+    {
+        animator = Plane.GetComponent<Animator>();
+    }
 
     private void Awake()
     {
@@ -35,16 +47,22 @@ public class GameManager : MonoBehaviour
         return worldSpaceCanvas;
     }
 
+    public void GameOver()
+    {
+        Debug.Log("Game Over");
+        gameOver = true;
+        animator.SetTrigger("GameOver");
+        // Burada oyun bitirme mantığını ekleyebilirsiniz
+    }
+
     public void HandleClick(RaycastHit hit)
     {
-        if (hit.collider.GetComponent<Airport>())
-        {
-            
-        }
+
 
         if (hit.collider.TryGetComponent<Location>(out Location location))
         {
-            if(location == selectedLocation)
+
+            if (location == selectedLocation)
             {
                 location.OnDeselected();
                 selectedLocation = null;
@@ -58,8 +76,14 @@ public class GameManager : MonoBehaviour
                 {
                     selectedLocation.OnDeselected();
                     SpawnHorde(location);
+                    selectedLocation = null;
                 }
-                else { Debug.Log("Seçili konumda asker yok!"); }
+                else 
+                { 
+                    Debug.Log("Seçili konumda asker yok!");
+                    location.OnDeselected();
+                    selectedLocation = null;
+                }
             }
             else
             {

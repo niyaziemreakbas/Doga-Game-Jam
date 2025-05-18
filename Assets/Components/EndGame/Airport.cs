@@ -7,10 +7,7 @@ public class Airport : MonoBehaviour
     {
         if (other.CompareTag("Horde"))
         {
-            if(other.GetComponent<Horde>().Count > 30)
-            {
-                Debug.Log("GameOver");
-            }
+
         }
     }
 }

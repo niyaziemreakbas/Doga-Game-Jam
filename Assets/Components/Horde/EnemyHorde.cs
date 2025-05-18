@@ -68,7 +68,7 @@ public class EnemyHorde : MonoBehaviour
             float distanceToTarget = Vector3.Distance(transform.position, currentTarget.transform.position);
             if (distanceToTarget <= killDistance)
             {
-                currentTarget.gameObject.SetActive(false);
+                Destroy(currentTarget.gameObject);
                 currentTarget = null; // Þimdilik hedefi sýfýrla
             }
             else if (distanceToTarget > maxChaseDistance)

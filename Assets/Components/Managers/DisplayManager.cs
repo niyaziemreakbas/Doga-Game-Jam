@@ -7,7 +7,7 @@ public class DisplayManager : MonoBehaviour
     [SerializeField] private GameObject locationParent; // Tüm Location'larýn parent GameObject'i
     [SerializeField] private GameObject hordeParent; // Tüm Horde'larýn parent GameObject'i (opsiyonel)
     [SerializeField] private GameObject enemyHordeParent;
-    [SerializeField] private Vector3 offset = new Vector3(0, 15f, 0); // UI'nin obje üzerindeki konumu (daha yukarý)
+    [SerializeField] private Vector3 offset = new Vector3(0, 11f, 0); // UI'nin obje üzerindeki konumu (daha yukarý)
     
     private Dictionary<Location, TextMeshPro> locationDisplays = new Dictionary<Location, TextMeshPro>();
 

@@ -1,0 +1,5 @@
+D:/Unity Projeleri Dosyalari/Doga Game Jam/.utmp/RelWithDebInfo/i603a282/arm64-v8a/CMakeFiles/edit_cache.dir
+D:/Unity Projeleri Dosyalari/Doga Game Jam/.utmp/RelWithDebInfo/i603a282/arm64-v8a/CMakeFiles/rebuild_cache.dir
+D:/Unity Projeleri Dosyalari/Doga Game Jam/.utmp/RelWithDebInfo/i603a282/arm64-v8a/GameActivity/CMakeFiles/game.dir
+D:/Unity Projeleri Dosyalari/Doga Game Jam/.utmp/RelWithDebInfo/i603a282/arm64-v8a/GameActivity/CMakeFiles/edit_cache.dir
+D:/Unity Projeleri Dosyalari/Doga Game Jam/.utmp/RelWithDebInfo/i603a282/arm64-v8a/GameActivity/CMakeFiles/rebuild_cache.dir

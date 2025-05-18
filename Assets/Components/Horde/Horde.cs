@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
@@ -16,6 +17,7 @@ public class Horde : MonoBehaviour
     private Vector3 uiOffset = new Vector3(0, 3, 0);
 
     NavMeshAgent agent;
+    Collider myCollider;    
 
 
     private void Awake()
@@ -25,6 +27,11 @@ public class Horde : MonoBehaviour
         agent.speed = 10f;
         worldSpaceCanvas = GameManager.Instance.ReturnCanvas();
         SetupTextMeshPro();
+
+        myCollider = GetComponent<Collider>(); 
+
+        if (myCollider != null)
+            myCollider.enabled = false;
     }
 
     public void OnSelected()
@@ -35,6 +42,19 @@ public class Horde : MonoBehaviour
     private void OnDestroy()
     {
         textMeshPro.gameObject.SetActive( false );
+    }
+
+    private void Start()
+    {
+        StartCoroutine(EnableColliderAfterDelay(3f));
+    }
+
+    private IEnumerator EnableColliderAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        if (myCollider != null)
+            myCollider.enabled = true;
     }
 
     private void Update()

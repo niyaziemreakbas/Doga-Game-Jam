@@ -7,7 +7,6 @@ public class CameraControllerManager : MonoBehaviour
 
     private InputSystem_Actions controls;
     private Vector2 moveInput;
-
     private bool isTouching = false;
     private Vector2 lastTouchPos;
 
@@ -15,7 +14,7 @@ public class CameraControllerManager : MonoBehaviour
     {
         controls = new InputSystem_Actions();
 
-        // Klavye veya joystick girdisi
+        // Girişleri oku
         controls.Camera.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
         controls.Camera.Move.canceled += _ => moveInput = Vector2.zero;
     }
@@ -25,9 +24,8 @@ public class CameraControllerManager : MonoBehaviour
 
     void Update()
     {
-        // 🎮 Klavye veya gamepad hareketi (kamera yönüne göre)
-        Vector3 inputDir = new Vector3(moveInput.x, 0f, moveInput.y);
-        Vector3 move = transform.right * inputDir.x + transform.forward * inputDir.z;
+        // 🎮 Klavye veya gamepad hareketi (sabit dünya yönüne göre)
+        Vector3 move = new Vector3(moveInput.x, 0f, moveInput.y);
         transform.position += move * moveSpeed * Time.deltaTime;
 
         // 📱 Dokunmatik hareket
@@ -47,11 +45,9 @@ public class CameraControllerManager : MonoBehaviour
 
                 Vector2 delta = currentPos - lastTouchPos;
 
-                // Dokunma hareketini kamera yönüne göre çevir
-                Vector3 touchDir = new Vector3(delta.x, 0, delta.y) * 0.01f; // hassasiyet ayarı
-                Vector3 worldMove = transform.right * touchDir.x + transform.forward * touchDir.z;
-
-                transform.position += worldMove * moveSpeed * Time.deltaTime;
+                // Sabit yönlere göre hareket (ekran sola kayarsa kamera sola gider)
+                Vector3 touchDir = new Vector3(-delta.x, 0, -delta.y) * 0.01f;
+                transform.position += touchDir * moveSpeed * Time.deltaTime;
 
                 lastTouchPos = currentPos;
             }
