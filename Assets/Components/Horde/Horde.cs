@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Horde : MonoBehaviour
@@ -8,10 +9,19 @@ public class Horde : MonoBehaviour
 
     public int Count => count;
 
-    public void Initialize(int initialCount, Location startLocation)
+    public event Action OnCountChanged;
+
+    public void Initialize(int initialCount)
     {
         count = initialCount;
-        SetLocation(startLocation);
+
+        currentLocation = null;
+        OnCountChanged?.Invoke();
+    }
+
+    public void OnSelected()
+    {
+        Debug.Log($"{name} seçildi. {count} askerimiz mevcut.");
     }
 
     public void SetLocation(Location newLocation)
@@ -25,9 +35,9 @@ public class Horde : MonoBehaviour
         return currentLocation;
     }
 
-    public void MergeWith(Horde other)
-    {
-        count += other.count;
-        //Destroy(other.gameObject);
-    }
+    //public void MergeWith(Horde other)
+    //{
+    //    count += other.count;
+    //    //Destroy(other.gameObject);
+    //}
 }

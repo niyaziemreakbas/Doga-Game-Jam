@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.AI;
 
 public class GameManager : MonoBehaviour
@@ -6,13 +7,17 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     private NavMeshAgent agent;
+
     private Horde selectedHorde;
     private Location selectedLocation;
 
     [SerializeField] private GameObject hordePrefab;
+    [SerializeField] private GameObject hordeParent;
 
 
-    //public GameObject testLocation;
+    [SerializeField] private DisplayManager displayManager;
+
+
 
     private void Awake()
     {
@@ -42,7 +47,8 @@ public class GameManager : MonoBehaviour
 
     public void HandleHordeClicked(Horde clickedHorde)
     {
-        if(selectedHorde == clickedHorde)
+        clickedHorde.OnSelected();
+        if (selectedHorde == clickedHorde)
         {
             ClearHorde(); // Seçili horde'u sıfırla
             return;
@@ -72,48 +78,52 @@ public class GameManager : MonoBehaviour
         {
             ClearHorde(); // Seçili horde'u sıfırla
             HandleLocationClicked(location);
-            Debug.Log("Aloo kardeşim location bu handle şunu");
+            //Debug.Log("Aloo kardeşim location bu handle şunu");
             return;
         }
         if (hit.collider.TryGetComponent<Horde>(out Horde horde))
         {
             ClearLocation();
             HandleHordeClicked(horde);
-            Debug.Log("Aloo kardeşim horde   bu handle şunu");
+            //Debug.Log("Aloo kardeşim horde   bu handle şunu");
             return;
         }
 
-        if(selectedHorde!= null)
+        if(selectedLocation != null && selectedLocation.SoldierCount > 0)
         {
+            GameObject createdHorde = SpawnHorde();
+            createdHorde.GetComponent<NavMeshAgent>().SetDestination(hit.point);
+            ClearLocation();
+        }
+
+        //Moves Horde
+        if (selectedHorde!= null)
+        {
+
             agent = selectedHorde.GetComponent<NavMeshAgent>();
             agent.SetDestination(hit.point);
         }
 
     }
 
-    private void MoveHorde(Location from, Location to)
+    public void AddHorde()
     {
-       // Horde hordeToMove = from.GetFirstHorde();
-
-        Instantiate(hordePrefab, from.transform.position, Quaternion.identity); // Yeni horde prefabını oluştur
-
-        Debug.Log(" aktif mi? : " + gameObject.activeInHierarchy);
-        
-        hordePrefab.transform.position = to.transform.position;
-        //hordePrefab.GetComponent<MoveableHorde>().MoveToLocation(to.gameObject.transform); // Yeni horde prefabını hedef konuma taşı
-
-        Debug.Log($"Horde {from.name} → {to.name} taşındı.");
+        selectedLocation.AddSoldiers();
     }
 
-    public void SpawnHorde()
+    public GameObject SpawnHorde()
     {
-        Location location = selectedLocation;
+        GameObject createdHorde = Instantiate(hordePrefab, selectedLocation.transform.position + new Vector3(0, 0, 2), Quaternion.identity);
 
+        createdHorde.GetComponent<Horde>().Initialize(selectedLocation.SoldierCount);
 
-        int count = 20;
-        Horde newHorde = new Horde();
-        newHorde.Initialize(count, location);
-        location.AddHorde(newHorde);
+        selectedLocation.HordeCreated();
+
+        createdHorde.transform.SetParent(hordeParent.transform);
+
+        displayManager.AddHordeDisplay(createdHorde.GetComponent<Horde>());
+
+        return createdHorde;
     }
 
     private void SetRed(GameObject obj)

@@ -5,7 +5,6 @@ using System;
 public class Location : MonoBehaviour
 {
     int soldierCount;
-    //private List<Horde> hordes = new List<Horde>();
 
     public int SoldierCount => soldierCount;
 
@@ -16,6 +15,20 @@ public class Location : MonoBehaviour
         soldierCount += horde.Count;
 
         OnHordeChanged?.Invoke();
+    }
+
+    public void HordeCreated()
+    {
+        soldierCount = 0;
+        OnHordeChanged?.Invoke();
+
+    }
+
+    public void AddSoldiers()
+    {
+        soldierCount += 5;
+        OnHordeChanged?.Invoke();
+
     }
 
     public void OnSelected()
