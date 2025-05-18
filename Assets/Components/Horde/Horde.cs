@@ -1,22 +1,30 @@
 using System;
+using TMPro;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Horde : MonoBehaviour
 {
     private int count;
 
-    private Location currentLocation;
-
     public int Count => count;
 
-    public event Action OnCountChanged;
+    [Header("Canvas ve UI")]
+    private Canvas worldSpaceCanvas;
+    private RectTransform hordeText;
+    TextMeshPro textMeshPro;
+    private Vector3 uiOffset = new Vector3(0, 3, 0);
 
-    public void Initialize(int initialCount)
+    NavMeshAgent agent;
+
+
+    private void Awake()
     {
-        count = initialCount;
+        agent = GetComponent<NavMeshAgent>();
 
-        currentLocation = null;
-        OnCountChanged?.Invoke();
+        agent.speed = 10f;
+        worldSpaceCanvas = GameManager.Instance.ReturnCanvas();
+        SetupTextMeshPro();
     }
 
     public void OnSelected()
@@ -24,20 +32,64 @@ public class Horde : MonoBehaviour
         Debug.Log($"{name} seçildi. {count} askerimiz mevcut.");
     }
 
-    public void SetLocation(Location newLocation)
+    private void OnDestroy()
     {
-        currentLocation = newLocation;
-       // transform.position = newLocation.transform.position;
+        textMeshPro.gameObject.SetActive( false );
     }
 
-    public Location GetLocation()
+    private void Update()
     {
-        return currentLocation;
+        UpdateTargetUIPosition();
     }
 
-    //public void MergeWith(Horde other)
-    //{
-    //    count += other.count;
-    //    //Destroy(other.gameObject);
-    //}
+    private void UpdateTargetUIPosition()
+    {
+
+        if (hordeText != null)
+        {
+            Vector3 worldPosition = transform.position + uiOffset;
+            hordeText.position = worldPosition;
+
+            Vector3 currentEuler = hordeText.eulerAngles;
+            hordeText.eulerAngles = new Vector3(90f, currentEuler.y, currentEuler.z);
+        }
+
+        textMeshPro.text = $"{count}";
+
+    }
+
+    private TextMeshPro SetupTextMeshPro()
+    {
+        Transform targetTransform = transform;
+        //Debug.Log($"TextMeshPro oluþturuluyor, target: {targetTransform.name}");
+        GameObject textObj = new GameObject("CountText");
+
+        // Canvas'in çocuðu yap
+        textObj.transform.SetParent(worldSpaceCanvas.transform, false);
+
+        // TextMeshPro bileþeni ekle
+        textMeshPro = textObj.AddComponent<TextMeshPro>();
+        textMeshPro.alignment = TextAlignmentOptions.Center;
+        textMeshPro.fontSize = 20;
+        textMeshPro.color = Color.black; // Font rengini siyah yap
+
+
+        hordeText = textObj.GetComponent<RectTransform>();
+        hordeText.position = targetTransform.position + uiOffset;
+        hordeText.sizeDelta = new Vector2(100, 50);
+        hordeText.localEulerAngles = new Vector3(90f, 0f, 0f); // X rotasyonunu 90 derece yap
+
+
+        return textMeshPro;
+    }
+
+
+    public void MovePosition(Location Location, int SoldierCount)
+    {
+        count += SoldierCount;
+
+        agent.SetDestination(Location.transform.position);
+
+    }
+
 }

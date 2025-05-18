@@ -6,22 +6,18 @@ public class DisplayManager : MonoBehaviour
 {
     [SerializeField] private GameObject locationParent; // Tüm Location'larýn parent GameObject'i
     [SerializeField] private GameObject hordeParent; // Tüm Horde'larýn parent GameObject'i (opsiyonel)
-    [SerializeField] private Canvas worldSpaceCanvas; // Dünya uzayý Canvas referansý
+    [SerializeField] private GameObject enemyHordeParent;
     [SerializeField] private Vector3 offset = new Vector3(0, 15f, 0); // UI'nin obje üzerindeki konumu (daha yukarý)
     
     private Dictionary<Location, TextMeshPro> locationDisplays = new Dictionary<Location, TextMeshPro>();
-    private Dictionary<Horde, TextMeshPro> hordeDisplays = new Dictionary<Horde, TextMeshPro>();
+
+    Canvas worldSpaceCanvas;
     
     private Camera mainCamera; // Ana kamera referansý
 
     private void Awake()
     {
-        // Canvas kontrolü
-        if (worldSpaceCanvas == null)
-        {
-            Debug.LogError("WorldSpaceCanvas atanmamýþ! Lütfen bir dünya uzayý Canvas'i atayýn.");
-            return;
-        }
+
 
         // Ana kamerayý bul
         mainCamera = Camera.main;
@@ -30,10 +26,13 @@ public class DisplayManager : MonoBehaviour
             Debug.LogError("Ana kamera bulunamadý!");
             return;
         }
+    }
 
-        // Tüm Location ve Horde'larýn UI'larýný baþlat
+    private void Start()
+    {
+        worldSpaceCanvas = GameManager.Instance.ReturnCanvas();
+
         InitializeLocationDisplays();
-        InitializeHordeDisplays();
     }
 
     private void OnDestroy()
@@ -41,11 +40,7 @@ public class DisplayManager : MonoBehaviour
         // Event aboneliklerini kaldýr
         foreach (var location in locationDisplays.Keys)
         {
-            location.OnHordeChanged -= () => UpdateLocationUI(location);
-        }
-        foreach (var horde in hordeDisplays.Keys)
-        {
-            horde.OnCountChanged -= () => UpdateHordeUI(horde);
+            location.OnSoldierChanged -= () => UpdateLocationUI(location);
         }
     }
 
@@ -55,18 +50,6 @@ public class DisplayManager : MonoBehaviour
 
         // Tüm TextMeshPro objelerinin kameraya bakmasýný saðla (sadece y ekseninde)
         foreach (var textMeshPro in locationDisplays.Values)
-        {
-            if (textMeshPro != null)
-            {
-                Vector3 direction = mainCamera.transform.position - textMeshPro.transform.position;
-                direction.y = 0; // Sadece y ekseninde hizala
-                if (direction != Vector3.zero)
-                {
-                    textMeshPro.transform.rotation = Quaternion.LookRotation(-direction);
-                }
-            }
-        }
-        foreach (var textMeshPro in hordeDisplays.Values)
         {
             if (textMeshPro != null)
             {
@@ -89,55 +72,18 @@ public class DisplayManager : MonoBehaviour
         }
 
         Location[] locations = locationParent.GetComponentsInChildren<Location>();
-        Debug.Log($"Bulunan Location sayýsý: {locations.Length}");
         foreach (var location in locations)
         {
-            Debug.Log($"Location bulundu: {location.name}");
             TextMeshPro textMeshPro = SetupTextMeshPro(location.transform);
             locationDisplays.Add(location, textMeshPro);
-            location.OnHordeChanged += () => UpdateLocationUI(location);
+            location.OnSoldierChanged += () => UpdateLocationUI(location);
             UpdateLocationUI(location);
-        }
-    }
-
-    private void InitializeHordeDisplays()
-    {
-        if (hordeParent == null)
-        {
-            Debug.LogWarning("HordeParent atanmamýþ, sahnedeki tüm Horde'lar aranacak.");
-            hordeParent = gameObject;
-        }
-
-        Horde[] hordes = hordeParent.GetComponentsInChildren<Horde>();
-        Debug.Log($"Bulunan Horde sayýsý: {hordes.Length}");
-        foreach (var horde in hordes)
-        {
-            Debug.Log($"Horde bulundu: {horde.name}");
-            AddHordeDisplay(horde);
-        }
-    }
-
-    public void AddHordeDisplay(Horde horde)
-    {
-        TextMeshPro textMeshPro = SetupTextMeshPro(horde.transform);
-        hordeDisplays.Add(horde, textMeshPro);
-        horde.OnCountChanged += () => UpdateHordeUI(horde);
-        UpdateHordeUI(horde);
-    }
-
-    public void RemoveHordeDisplay(Horde horde)
-    {
-        if (hordeDisplays.TryGetValue(horde, out TextMeshPro textMeshPro))
-        {
-            horde.OnCountChanged -= () => UpdateHordeUI(horde);
-            Destroy(textMeshPro.gameObject);
-            hordeDisplays.Remove(horde);
         }
     }
 
     private TextMeshPro SetupTextMeshPro(Transform targetTransform)
     {
-        Debug.Log($"TextMeshPro oluþturuluyor, target: {targetTransform.name}");
+        //Debug.Log($"TextMeshPro oluþturuluyor, target: {targetTransform.name}");
         GameObject textObj = new GameObject("CountText");
 
         // Canvas'in çocuðu yap
@@ -167,17 +113,9 @@ public class DisplayManager : MonoBehaviour
         {
             textMeshPro.text = location.SoldierCount.ToString();
             // Pozisyonu güncelle
-            textMeshPro.transform.position = location.transform.position + offset;
+            textMeshPro.rectTransform.position = location.transform.position + offset;
         }
     }
 
-    private void UpdateHordeUI(Horde horde)
-    {
-        if (hordeDisplays.TryGetValue(horde, out TextMeshPro textMeshPro))
-        {
-            textMeshPro.text = horde.Count.ToString();
-            // Pozisyonu güncelle
-            textMeshPro.transform.position = horde.transform.position + offset;
-        }
-    }
+
 }
