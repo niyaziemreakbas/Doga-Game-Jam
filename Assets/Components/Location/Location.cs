@@ -58,17 +58,20 @@ public class Location : MonoBehaviour
         {
             if (gameObject.CompareTag("Airport"))
             {
-                if (soldierCount >= 30)
-                {
-                    GameManager.Instance.GameOver();
-                    Debug.Log("GameOver");
-                }
+                print("Airport'a girdi");
+
             }
 
             soldierCount += other.GetComponent<Horde>().Count;
             print(other.gameObject);
             Destroy(other.gameObject);
             OnSoldierChanged?.Invoke();
+
+            if (soldierCount >= 30)
+            {
+                GameManager.Instance.GameOver();
+                Debug.Log("GameOver");
+            }
         }
     }
 

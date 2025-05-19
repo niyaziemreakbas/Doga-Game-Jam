@@ -96,7 +96,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetPrefab: {fileID: 0}
   uiOffset: {x: 0, y: -10, z: 0}
-  moveSpeed: 3.5
+  moveSpeed: 5
   patrolPoints: []
   detectionRadius: 10
   maxChaseDistance: 15

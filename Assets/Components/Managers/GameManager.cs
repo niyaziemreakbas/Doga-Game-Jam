@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
 
     bool gameOver = false;
 
-
+    public Camera endGameCamera;
 
     private Location selectedLocation;
 
@@ -52,6 +52,15 @@ public class GameManager : MonoBehaviour
         Debug.Log("Game Over");
         gameOver = true;
         animator.SetTrigger("GameOver");
+
+        Camera mainCam = Camera.main;
+        if (mainCam != null)
+            mainCam.gameObject.SetActive(false);
+
+        // EndGame kamerasını aktif et
+        if (endGameCamera != null)
+            endGameCamera.gameObject.SetActive(true);
+
         // Burada oyun bitirme mantığını ekleyebilirsiniz
     }
 
