@@ -97,7 +97,7 @@ public class GameManager : MonoBehaviour
     public GameObject SpawnHorde(Location targetLoc)
     {
 
-        GameObject createdHorde = Instantiate(hordePrefab, selectedLocation.transform.position + new Vector3(0, 0, 5), Quaternion.identity);
+        GameObject createdHorde = Instantiate(hordePrefab, selectedLocation.transform.position + new Vector3(5, 0, 5), Quaternion.identity);
 
         createdHorde.GetComponent<Horde>().MovePosition(targetLoc, selectedLocation.SoldierCount);
 

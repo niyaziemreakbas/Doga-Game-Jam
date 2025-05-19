@@ -56,9 +56,9 @@ public class Location : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Horde"))
         {
-            if (transform.parent != null && transform.parent.CompareTag("Airport"))
+            if (gameObject.CompareTag("Airport"))
             {
-                if (other.GetComponent<Horde>().Count > 30)
+                if (soldierCount >= 30)
                 {
                     GameManager.Instance.GameOver();
                     Debug.Log("GameOver");
@@ -66,6 +66,7 @@ public class Location : MonoBehaviour
             }
 
             soldierCount += other.GetComponent<Horde>().Count;
+            print(other.gameObject);
             Destroy(other.gameObject);
             OnSoldierChanged?.Invoke();
         }

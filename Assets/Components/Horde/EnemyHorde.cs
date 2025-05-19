@@ -9,7 +9,7 @@ public class EnemyHorde : MonoBehaviour
     Horde currentTarget;
 
     [Header("Canvas ve UI")]
-    [SerializeField] private Canvas worldSpaceCanvas;
+    private Canvas worldSpaceCanvas;
     [SerializeField] private GameObject targetPrefab;
     private RectTransform targetUI;
     [SerializeField] private Vector3 uiOffset = new Vector3(0, -10, 0);
@@ -26,14 +26,23 @@ public class EnemyHorde : MonoBehaviour
     [SerializeField] private float maxChaseDistance = 15f;
     [SerializeField] private float killDistance = 3f;
 
-
-
+    Animator animator;
+    Animator[] animators;
 
 
     private void Awake()
     {
+        animator = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
         agent.speed = moveSpeed;
+
+        if (transform.parent != null)
+        {
+            animators = gameObject.GetComponentsInChildren<Animator>();
+            
+
+        }
+
     }
 
     void Start()
@@ -42,6 +51,8 @@ public class EnemyHorde : MonoBehaviour
         {
             agent.SetDestination(patrolPoints[currentPatrolIndex].position);
         }
+
+        worldSpaceCanvas = GameManager.Instance.ReturnCanvas();
 
         if (targetPrefab != null && worldSpaceCanvas != null)
         {
@@ -68,6 +79,12 @@ public class EnemyHorde : MonoBehaviour
             float distanceToTarget = Vector3.Distance(transform.position, currentTarget.transform.position);
             if (distanceToTarget <= killDistance)
             {
+                foreach (Animator anim in animators)
+                {
+                    print("attak edildi");
+                    anim.SetTrigger("Attack");
+                }
+
                 Destroy(currentTarget.gameObject);
                 currentTarget = null; // Þimdilik hedefi sýfýrla
             }

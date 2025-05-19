@@ -14,7 +14,7 @@ public class Horde : MonoBehaviour
     private Canvas worldSpaceCanvas;
     private RectTransform hordeText;
     TextMeshPro textMeshPro;
-    private Vector3 uiOffset = new Vector3(0, 3, 0);
+    private Vector3 uiOffset = new Vector3(0, 5, 0);
 
     NavMeshAgent agent;
     Collider myCollider;    
@@ -97,19 +97,36 @@ public class Horde : MonoBehaviour
         hordeText = textObj.GetComponent<RectTransform>();
         hordeText.position = targetTransform.position + uiOffset;
         hordeText.sizeDelta = new Vector2(100, 50);
-        hordeText.localEulerAngles = new Vector3(90f, 0f, 0f); // X rotasyonunu 90 derece yap
+        hordeText.localEulerAngles = new Vector3(0f, 180f, 0f); // X rotasyonunu 90 derece yap
 
 
         return textMeshPro;
     }
 
+    //public void MovePosition(Location Location, int SoldierCount)
+    //{
+    //    count += SoldierCount;
 
-    public void MovePosition(Location Location, int SoldierCount)
+    //    agent.SetDestination(Location.transform.position);
+
+    //}
+
+    public void MovePosition(Location location, int soldierCount)
     {
-        count += SoldierCount;
+        count += soldierCount;
 
-        agent.SetDestination(Location.transform.position);
+        Vector3 targetPos = location.transform.position;
+        agent.SetDestination(targetPos);
 
+        // Karakteri hedefe döndür
+        Vector3 direction = (targetPos - transform.position).normalized;
+
+        // Sadece yatay düzlemde döndür (y ekseninde)
+        //direction.y = 0;
+
+        if (direction != Vector3.zero)
+        {
+            transform.rotation = Quaternion.LookRotation(direction);
+        }
     }
-
 }
